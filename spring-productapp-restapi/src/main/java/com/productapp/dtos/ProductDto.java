@@ -2,8 +2,11 @@ package com.productapp.dtos;
 
 import java.util.List;
 
-import com.productapp.model.Brand;
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +20,15 @@ import lombok.ToString;
 @ToString
 public class ProductDto {
 
+	@NotNull
+	@NotEmpty(message = "productname should not be empty")
 	private String productName;
-
+	@Positive(message = "Value must be greater than 0")
 	private Integer productId;
 
 	private double price; // use price for JPQL queries and cost for "sql"
-
+	@Min(value = 1, message = "Value must not be less than 1")
+	@Max(value = 5, message = "Value must not be greater than 5")
 	private int ratings;
 
 	private FeaturesDto features; //one to one

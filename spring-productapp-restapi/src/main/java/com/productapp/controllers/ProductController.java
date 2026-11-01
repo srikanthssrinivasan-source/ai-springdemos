@@ -19,6 +19,7 @@ import com.productapp.dtos.ProductDto;
 import com.productapp.exception.ProductNotFoundException;
 import com.productapp.service.IProductService;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,84 +27,141 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/product-api/v1")
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductController {
-	
-	//autowire
+
+	// autowire
 	IProductService productService;
-	
-	//data comes in body part of the request 
-	//- use @RequestBody to get the json object
-	
-	//http://localhost:8080/product-api/v1/products   (method is post)
+
+	// data comes in body part of the request
+	// - use @RequestBody to get the json object
+
+	// http://localhost:8080/product-api/v1/products (method is post)
 	@PostMapping("/products")
-	ResponseEntity<Void> addProduct(@RequestBody ProductDto productDto){
+	ResponseEntity<Void> addProduct(@Valid @RequestBody ProductDto productDto) {
 		productService.addProduct(productDto);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
-	}	
-	
+	}
+
 //	http://localhost:8081/product-api/v1/products (method is put)
 	@PutMapping("/products")
-	ResponseEntity<Void> updateProduct(@RequestBody ProductDto product){
+	ResponseEntity<Void> updateProduct(@Valid @RequestBody ProductDto product) {
 		productService.updateProduct(product);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
 //	http://localhost:8081/product-api/v1/products (method is delete)
 	@DeleteMapping("/products/id/{productId}")
-	ResponseEntity<Void> deleteProduct(@PathVariable int productId){
+	ResponseEntity<Void> deleteProduct(@PathVariable int productId) {
 		productService.deleteProduct(productId);
 		return ResponseEntity.status(HttpStatus.OK).build();
-		
+
 	}
 
 //	http://localhost:8080/product-api/v1/products/id/1
 	@GetMapping("/products/id/{productId}")
-	ResponseEntity<ProductDto> getById(@PathVariable int productId){
+	ResponseEntity<ProductDto> getById(@PathVariable int productId) {
 		ProductDto productDto = productService.getById(productId);
-		//adding header
+		// adding header
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("desc","Getting one product by id");
-		//return a response entity object with status, header and body
+		headers.add("desc", "Getting one product by id");
+		// return a response entity object with status, header and body
 		return ResponseEntity.status(HttpStatus.OK).headers(headers).body(productDto);
-		
+
 	}
 
 	@GetMapping("/products")
-	ResponseEntity<List<ProductDto>> getAllProducts(){
+	ResponseEntity<List<ProductDto>> getAllProducts() {
 		List<ProductDto> productDtos = productService.getAllProducts();
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("desc", "Getting all prodcuts");
 		headers.add("desc", "Returning the product list");
-		
+
 		return ResponseEntity.ok().headers(headers).body(productDtos);
 	}
-	
-	//http://localhost:800/product-api/v1/products/price/1200
+
+	// http://localhost:8080/product-api/v1/products/price/1200
 	@GetMapping("/products/prive/{price}")
-	ResponseEntity<List<ProductDto>> getByLesserPrice(@PathVariable double price) throws ProductNotFoundException{
+	ResponseEntity<List<ProductDto>> getByLesserPrice(@PathVariable double price) throws ProductNotFoundException {
 		List<ProductDto> productDtos = productService.getByLesserPrice(price);
-		
+
 		return ResponseEntity.ok(productDtos);
 	}
 
-	//http://localhost:800/product-api/v1/products/name?productname=bottle
+	// http://localhost:8080/product-api/v1/products/name?productname=bottle
 	@GetMapping("/products/name")
-	ResponseEntity<List<ProductDto>> getByProductNameContains(@RequestParam String productname){
+	ResponseEntity<List<ProductDto>> getByProductNameContains(@RequestParam String productname) {
 		List<ProductDto> productDtos = productService.getByProductNameContains(productname);
-				
+
 		return ResponseEntity.ok(productDtos);
 	}
 
-	//http://localhost:800/product-api/v1/products/productname/bottle
+	// http://localhost:8080/product-api/v1/products/productname/bottle
 	@GetMapping("/products/productname/{name}")
-	ResponseEntity<List<String>> getByNameHaving(@PathVariable String productname){
+	ResponseEntity<List<String>> getByNameHaving(@PathVariable String productname) {
 		List<String> productNames = productService.getByNameHaving(productname);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("add","Getting all products");
-		headers.add("add","Returning the product list");
-		//always use static method to create responseentity
-		return new ResponseEntity<>(productNames,headers,HttpStatus.OK.value());
+		headers.add("add", "Getting all products");
+		headers.add("add", "Returning the product list");
+		// always use static method to create responseentity
+		return new ResponseEntity<>(productNames, headers, HttpStatus.OK.value());
+	}
+	
+	// http://localhost:8080/product-api/v1/products/color/black
+	@GetMapping("/products/color/{color}")
+	ResponseEntity<List<ProductDto>> getByColor(@PathVariable String color) {
+		List<ProductDto> productDtos = productService.getByColor(color);
+		return ResponseEntity.ok().body(productDtos);
+	}
+	
+	// http://localhost:8080/product-api/v1/products/offers?offerName=Bank offer
+	@GetMapping("/products/offers")
+	ResponseEntity<List<ProductDto>> getByOffers(@RequestParam String offerName){
+		List<ProductDto> productDtos = productService.getByOffers(offerName);
+		return ResponseEntity.ok().body(productDtos);
+	}
+	
+	// http://localhost:8080/product-api/v1/products/color/black/price/10000
+	@GetMapping("/products/color/{color}/price/{price}")
+	ResponseEntity<List<ProductDto>> getByColorAndLesserPrice(String color, double price){
+		List<ProductDto> productDtos = productService.getByColorAndLesserPrice(color, price);
+		return ResponseEntity.ok().body(productDtos);
+	}
+	
+	// http://localhost:8080/product-api/v1/products/category/Sports/brand/Samsung
+	@GetMapping("/products/category/{categoryName}/brand/{brandName}")
+	ResponseEntity<List<ProductDto>> getByCategoryAndBrand(@PathVariable String categoryName,@PathVariable String brandName){
+		List<ProductDto> productDtos = productService.getByCategoryAndBrand(categoryName, brandName);
+		return ResponseEntity.ok().body(productDtos);
+	}
+		
+	// http://localhost:8080/product-api/v1/products/delivery/Ekart
+	@GetMapping("/products/delivery/{delivery}")
+	ResponseEntity<List<ProductDto>> getByDeliveryTypes(@PathVariable String delivery){
+		List<ProductDto> productDtos = productService.getByDeliveryTypes(delivery);
+		return ResponseEntity.ok().body(productDtos);
+	}
+
+	// http://localhost:8080/product-api/v1/products/payment/UPI/delivery/Prime
+	@GetMapping("/products/payment/{payment}/delivery/{delivery}")
+	ResponseEntity<List<ProductDto>> getByPaymentAndDelivery(@PathVariable String payment,@PathVariable String delivery){
+		List<ProductDto> productDtos = productService.getByPaymentAndDelivery(payment, delivery);
+		return ResponseEntity.ok().body(productDtos);
+	}
+	
+	// http://localhost:8080/product-api/v1/products/category/Electronics/brand/Samsung/offers/Bank offer
+	@GetMapping("/products/category/{category}/brand/{brand}/offers/{offer}")
+	ResponseEntity<List<ProductDto>> getByCatBrandOffer(@PathVariable String category,@PathVariable String brand,@PathVariable String offer){
+		List<ProductDto> productDtos = productService.getByCatBrandOffer(category, brand, offer);
+		return ResponseEntity.ok().body(productDtos);
+	}
+	
+	//pagination
+	// http://localhost:8080/product-api/v1/products/page/2/item/3
+	@GetMapping("/products/page/{pageNo}/item/{itemcount}")
+	ResponseEntity<List<ProductDto>> getAllProducts(@PathVariable int pageNo,@PathVariable  int itemcount){
+		List<ProductDto> productDtos = productService.getAllProducts(pageNo, itemcount);
+		return ResponseEntity.ok().body(productDtos);
 	}
 
 }

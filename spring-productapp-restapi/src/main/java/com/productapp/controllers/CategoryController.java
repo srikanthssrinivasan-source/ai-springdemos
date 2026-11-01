@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,24 +36,31 @@ public class CategoryController {
 
 	}
 
-
-	void updateCategory(CategoryDto categoryDto) {
-		
+	// http://localhost:8080/product-api/v1/categories (method is post)
+	@PutMapping("/categories")
+	ResponseEntity<Void> updateCategory(@RequestBody CategoryDto categoryDto) {
+		categoryService.updateCategory(categoryDto);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
-	void deleteCategory(int categoryId) {
-
+	// http://localhost:8080/product-api/v1/categories/id/1
+	@DeleteMapping("/categories/id/{categoryId}")
+	ResponseEntity<Void> deleteCategory(@PathVariable int categoryId) {
+		categoryService.deleteCategory(categoryId);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	// return a dto object only
-	CategoryDto getById(int categoryId) {
-		return null;
-
+	// http://localhost:8080/product-api/v1/categories/id/1 (method is post)
+	@GetMapping("/categories/id/{categoryId}")
+	ResponseEntity<CategoryDto> getById(@PathVariable int categoryId) {
+		return ResponseEntity.ok(categoryService.getById(categoryId));
 	}
 
-	List<CategoryDto> getAll() {
-		return null;
-
+	// http://localhost:8080/product-api/v1/categories/id/1 (method is post)
+	@GetMapping("/categories")
+	ResponseEntity<List<CategoryDto>> getAll() {
+		return ResponseEntity.ok(categoryService.getAll());
 	}
 
 }

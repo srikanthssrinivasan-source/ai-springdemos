@@ -24,5 +24,23 @@ public interface IProductService {
 	List<ProductDto> getByProductNameContains(String productname);
 
 	List<String> getByNameHaving(String productname);
+	
+	//pagination
+	List<ProductDto> getAllProducts(int pageNo, int itemcount);
+	
+	//custom queries
+	List<ProductDto> getByColor(String color)  throws ProductNotFoundException;
+	
+	List<ProductDto> getByOffers(String offername)  throws ProductNotFoundException;
+	
+	List<ProductDto> getByColorAndLesserPrice(String color, double price)throws ProductNotFoundException;
+	
+	List<ProductDto> getByCategoryAndBrand(String category, String brand)throws ProductNotFoundException;
+		
+	List<ProductDto> getByDeliveryTypes(String delivery)throws ProductNotFoundException;
 
+	List<ProductDto> getByPaymentAndDelivery(String payment, String delivery)throws ProductNotFoundException;
+	
+	List<ProductDto> getByCatBrandOffer(String category, String brand, String offer)throws ProductNotFoundException;
+	
 }

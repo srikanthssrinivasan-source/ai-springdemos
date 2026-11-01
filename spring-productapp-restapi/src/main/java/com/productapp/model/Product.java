@@ -43,7 +43,7 @@ public class Product {
 	
 	
 	//Cascade says - save the child entity before saving the parent entity	
-	@OneToOne(cascade=CascadeType.PERSIST) //save the features before the product 
+	@OneToOne(cascade=CascadeType.ALL) //save the features before the product 
 	@JoinColumn(name="features_id") //to give a different column name
 	private Features features;
 	

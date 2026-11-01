@@ -2,15 +2,13 @@ package com.productapp.service;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.productapp.config.ProductMapper;
 import com.productapp.dtos.CategoryDto;
 import com.productapp.model.Category;
-import com.productapp.repository.IBrandRepository;
 import com.productapp.repository.ICategoryRepository;
-import com.productapp.repository.IProductRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -50,10 +48,15 @@ public class CategoryServiceImpl implements ICategoryService {
 	}	
 	@Override
 	public List<CategoryDto> getAll() {
-		List<CategoryDto> categoryDtos=  categoryRepository.findAll()
-				.stream()
-				.map(category->mapper.toCategoryDto(category))
-				.toList();
+		
+		//get the sorted list
+		Sort sort = Sort.by("categoryName");//pass the instance variable name
+		
+		List<Category> categories = categoryRepository.findAll(sort);
+
+		List<CategoryDto> categoryDtos = categories
+									.stream()
+									.map(category -> mapper.toCategoryDto(category)).toList();
 		return categoryDtos;
 	}
 	
